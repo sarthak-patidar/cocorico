@@ -21,6 +21,15 @@ services:
             - "%cocorico.dashboard_max_per_page%"
             - "@cocorico.mailer.twig_swift"
 
+    cocorico.listing.import.manager:
+        class: Cocorico\CoreBundle\Model\Manager\ListingImportManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@security.token_storage"
+            - "%cocorico.listing_new_is_published%"
+            - "%cocorico.dashboard_max_per_page%"
+            - "@cocorico.mailer.twig_swift"
+
     #todo: Split it in muliple services
     cocorico.booking.manager:
         class: Cocorico\CoreBundle\Model\Manager\BookingManager
@@ -29,7 +38,8 @@ services:
             - "@doctrine.odm.mongodb.document_manager"
             - "@cocorico.listing_availability.manager"
             - "@cocorico.mailer.twig_swift"
-            - "@?cocorico_sms.smser.twig"
+            - "@cocorico.smser.twig"
+            - "@?cocorico_sms.receiver"
             - "@event_dispatcher"
             - parameters:
                 cocorico_fee_as_asker: "%cocorico.fee_as_asker%"
@@ -38,8 +48,6 @@ services:
                 cocorico_time_zone: "%cocorico.time_zone%"
                 cocorico_time_max: "%cocorico.times_max%"
                 cocorico_time_hours_available: "%cocorico.time_hours_available%"
-                cocorico_booking_expiration_delay: "%cocorico.booking.expiration_delay%"
-                cocorico_booking_acceptation_delay: "%cocorico.booking.acceptation_delay%"
                 cocorico_booking_allow_single_day: "%cocorico.booking.allow_single_day%"
                 cocorico_booking_end_day_included: "%cocorico.booking.end_day_included%"
                 cocorico_booking_min_start_delay: "%cocorico.booking.min_start_delay%"
