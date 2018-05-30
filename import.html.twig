@@ -1,0 +1,74 @@
+{# @author Sarthak Patidar <sarthakpatidar15@gmail.com> #}
+{% extends '::base.html.twig' %}
+
+
+{% block layout %}
+    {% embed '@CocoricoCore/Frontend/layout.html.twig' %}
+
+        {% trans_default_domain 'cocorico_listing' %}
+
+        {% block breadcrumbs %}
+        {% endblock %}
+
+        {% block search_form %}
+        {% endblock %}
+
+        {% block main %}
+            {{ status }}
+            <br><br>
+            {{ count }}
+        {% endblock %}
+
+    {% endembed %}
+{% endblock layout %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {#Geocoding #}
+    {% include '@CocoricoCore/Frontend/Listing/js/_geocoding_js.html.twig' with {
+        'map_elt': '#map-listing',
+        'marker_draggable': true
+    } only %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        var count = 1;
+        function sendData(artist)
+        {
+            $.ajax({
+                url: 'http://localhost:8000/en/listing/new',
+                type: 'POST',
+                data: artist,
+                dataType: 'text/plain',
+                success: function(data){
+                    count++;
+                    console.log('Successfully Sent: '+data);
+                    document.getElementById('response').outerHTML += "<li>Sending Data for row: "+ count +" .</li>";
+                },
+                error: function(data){
+                    // data = JSON.stringify(data);
+                    console.log(data);
+                    // alert(data);
+                }
+            });
+        }
+
+        {#$(document).ready(function(){#}
+            {#{% for row in collection %}#}
+                {#var artist = new Array();#}
+                {#{% for item in row %}#}
+                    {#artist.push('{{ item }}');#}
+                {#{% endfor %}#}
+                {#var formData = 'http://localhost:8000/en/listing/new?listing_categories[listingListingCategories][]=15&listing_categories[_token]=n0aZZkV1713X-VMlVVBl3PNrS0rc0bW7P_CS86d6LhA&listing[translations][en][title]=Dr.+Strange&listing[translations][en][description]=Dr.+Strange&listing[translations][fr][title]=Dr.+Strange&listing[translations][fr][description]=Dr.+Strange&listing[image][new][]=&listing[image][uploaded]=5d9888d1f5360c7091bde0019bee0704eab9f3db.jpg&listing[price]=50.00&listing[location][coordinate]={"en":{"postal_code":"452009","postal_code_short":"452009","locality":"Indore","locality_short":"Indore","political":"India","political_short":"IN","administrative_area_level_2":"Indore","administrative_area_level_2_short":"Indore","administrative_area_level_1":"Madhya+Pradesh","administrative_area_level_1_short":"MP","country":"India","country_short":"IN"},"formatted_address":"Indore,+Madhya+Pradesh+452009,+India","types":["postal_code"],"location_type":"APPROXIMATE","viewport":{"south":22.6784971,"west":75.81888660000004,"north":22.7055649,"east":75.8555212},"bounds":{"south":22.6784971,"west":75.81888660000004,"north":22.7055649,"east":75.8555212},"location":{"lat":22.6902382,"lng":75.84468019999997},"lat":22.6902382,"lng":75.84468019999997,"fr":{"street_number":"3","street_number_short":"3","route":"Keshar+Bagh+Road","route_short":"Keshar+Bagh+Rd","political":"Inde","political_short":"IN","sublocality":"Lokmanya+Nagar","sublocality_short":"Lokmanya+Nagar","sublocality_level_2":"Jain+Colony","sublocality_level_2_short":"Jain+Colony","sublocality_level_1":"Lokmanya+Nagar","sublocality_level_1_short":"Lokmanya+Nagar","locality":"Indore","locality_short":"Indore","administrative_area_level_2":"Indore","administrative_area_level_2_short":"Indore","administrative_area_level_1":"Madhya+Pradesh","administrative_area_level_1_short":"MP","country":"Inde","country_short":"IN","postal_code":"452009","postal_code_short":"452009"}}&listing[location][country]=IN&listing[location][city]=Indore&listing[location][zip]=452009&listing[location][street_number]=12Bis&listing[location][route]=8435882403&listing[user][lastName]=&listing[user][firstName]=&listing[user][birthday][day]=1&listing[user][birthday][month]=1&listing[user][birthday][year]=2000&listing[user][countryOfResidence]=FR&listing[user][email]=&listing[user][plainPassword][first]=&listing[user][plainPassword][second]=&listing[user_login][_username]=demo%40star.com&listing[user_login][_password]=kitten&listing[tac]=1&listing[_token]=7vrT-oed7MH86iedrB9beW1yKzF8XiEHji6EiM-0rHQ';#}
+                {#// console.log(formData);#}
+            {#{% endfor %}#}
+            {#sendData(formData);#}
+        {#});#}
+    </script>
+
+    {#Translations#}
+    {% include '@CocoricoCore/Frontend/Listing/js/_translator_js.html.twig' only %}
+
+
+{% endblock %}
