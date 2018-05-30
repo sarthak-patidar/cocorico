@@ -20,7 +20,6 @@ use Cocorico\ReviewBundle\Entity\Review;
 use Cocorico\UserBundle\Model\ListingAlertInterface;
 use Cocorico\UserBundle\Validator\Constraints as CocoricoUserAssert;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\MessageBundle\Model\ParticipantInterface;
 use FOS\UserBundle\Entity\User as BaseUser;
@@ -92,7 +91,7 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="last_name", type="string", length=100)
      *
      * @Assert\NotBlank(message="cocorico_user.last_name.blank", groups={
-     *  "CocoricoRegistration", "CocoricoProfile", "CocoricoProfileBankAccount"
+     *  "CocoricoRegistration", "CocoricoProfile", "CocoricoProfilePayment"
      * })
      *
      * @Assert\Length(
@@ -100,7 +99,7 @@ class User extends BaseUser implements ParticipantInterface
      *     max="100",
      *     minMessage="cocorico_user.last_name.short",
      *     maxMessage="cocorico_user.last_name.long",
-     *     groups={"CocoricoRegistration", "CocoricoProfile", "CocoricoProfileBankAccount"}
+     *     groups={"CocoricoRegistration", "CocoricoProfile", "CocoricoProfilePayment"}
      * )
      */
     protected $lastName;
@@ -109,7 +108,7 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="first_name", type="string", length=100)
      *
      * @Assert\NotBlank(message="cocorico_user.first_name.blank", groups={
-     *  "CocoricoRegistration", "CocoricoProfile", "CocoricoProfileBankAccount"
+     *  "CocoricoRegistration", "CocoricoProfile", "CocoricoProfilePayment"
      * })
      *
      * @Assert\Length(
@@ -117,7 +116,7 @@ class User extends BaseUser implements ParticipantInterface
      *     max="100",
      *     minMessage="cocorico_user.first_name.short",
      *     maxMessage="cocorico_user.first_name.long",
-     *     groups={"CocoricoRegistration", "CocoricoProfile", "CocoricoProfileBankAccount"}
+     *     groups={"CocoricoRegistration", "CocoricoProfile", "CocoricoProfilePayment"}
      * )
      */
     protected $firstName;
@@ -127,7 +126,7 @@ class User extends BaseUser implements ParticipantInterface
      *
      * @ORM\Column(name="phone_prefix", type="string", length=6, nullable=true)
      */
-    protected $phonePrefix = '+33';
+    protected $phonePrefix = '+91';
 
     /**
      * @var string
@@ -136,26 +135,28 @@ class User extends BaseUser implements ParticipantInterface
      */
     protected $phone;
 
-
     /**
      * @var \DateTime $birthday
      *
-     * @ORM\Column(name="birthday", type="date")
-     *
-     * @Assert\NotBlank(message="cocorico_user.birthday.blank", groups={
-     *  "CocoricoRegistration", "CocoricoProfileBankAccount"
-     * })
+     * @ORM\Column(name="birthday", type="date", nullable=true)
      *
      */
     protected $birthday;
-
 
     /**
      * @var string
      *
      * @ORM\Column(name="nationality", type="string", length=3, nullable=true)
      */
-    protected $nationality = "FR";
+    protected $nationality = "IN";
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="gender", type="string", length=8, nullable=true)
+     */
+    protected $gender = "IN";
+
 
     /**
      * @var string
@@ -163,10 +164,10 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="country_of_residence", type="string", length=3, nullable=true)
      *
      * @Assert\NotBlank(message="cocorico_user.country_of_residence.blank", groups={
-     *  "CocoricoRegistration", "CocoricoProfileBankAccount"
+     *  "CocoricoRegistration", "CocoricoProfilePayment"
      * })
      */
-    protected $countryOfResidence = "FR";
+    protected $countryOfResidence = "IN";
 
     /**
      * @var string
@@ -181,11 +182,11 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="iban", type="string", length=45, nullable=true)
      *
      * @Assert\Iban(message = "cocorico_user.iban.invalid", groups={
-     *  "CocoricoProfileBankAccount"
+     *  "CocoricoProfilePayment"
      * }))
      *
      * @Assert\NotBlank(message="cocorico_user.iban.blank", groups={
-     *  "CocoricoProfileBankAccount"
+     *  "CocoricoProfilePayment"
      * })
      *
      */
@@ -197,7 +198,7 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="bic", type="string", length=25, nullable=true)
      *
      * @Assert\NotBlank(message="cocorico_user.bic.blank", groups={
-     *  "CocoricoProfileBankAccount"
+     *  "CocoricoProfilePayment"
      * })
      */
     protected $bic;
@@ -208,7 +209,7 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="bank_owner_name", type="string", length=100, nullable=true)
      *
      * @Assert\NotBlank(message="cocorico_user.bank_owner_name.blank", groups={
-     *  "CocoricoProfileBankAccount"
+     *  "CocoricoProfilePayment"
      * })
      */
     protected $bankOwnerName;
@@ -219,7 +220,7 @@ class User extends BaseUser implements ParticipantInterface
      * @ORM\Column(name="bank_owner_address", type="string", length=255, nullable=true)
      *
      * @Assert\NotBlank(message="cocorico_user.bank_owner_address.blank", groups={
-     *  "CocoricoProfileBankAccount"
+     *  "CocoricoProfilePayment"
      * })
      */
     protected $bankOwnerAddress;
@@ -247,7 +248,7 @@ class User extends BaseUser implements ParticipantInterface
      *
      * @var boolean
      */
-    protected $phoneVerified = false;
+    protected $phoneVerified;
 
     /**
      *
@@ -255,7 +256,7 @@ class User extends BaseUser implements ParticipantInterface
      *
      * @var boolean
      */
-    protected $emailVerified = false;
+    protected $emailVerified;
 
     /**
      *
@@ -263,7 +264,7 @@ class User extends BaseUser implements ParticipantInterface
      *
      * @var boolean
      */
-    protected $idCardVerified = false;
+    protected $idCardVerified;
 
     /**
      *
@@ -359,7 +360,6 @@ class User extends BaseUser implements ParticipantInterface
 
     /**
      * @ORM\OneToMany(targetEntity="Cocorico\UserBundle\Entity\UserAddress", mappedBy="user", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"type" = "asc"})
      *
      * @var UserAddress[]
      */
@@ -699,6 +699,22 @@ class User extends BaseUser implements ParticipantInterface
     public function setNationality($nationality)
     {
         $this->nationality = $nationality;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param string $gender
+     */
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
     }
 
     /**
@@ -1157,10 +1173,8 @@ class User extends BaseUser implements ParticipantInterface
      */
     public function addAddress(UserAddress $address)
     {
-        if (!$this->addresses->contains($address)) {
-            $address->setUser($this);
-            $this->addresses->add($address);
-        }
+        $address->setUser($this);
+        $this->addresses[] = $address;
 
         return $this;
     }
@@ -1173,46 +1187,18 @@ class User extends BaseUser implements ParticipantInterface
     public function removeAddress(UserAddress $address)
     {
         $this->addresses->removeElement($address);
-        $address->setUser(null);
     }
 
     /**
-     * Get addresses ordered by type
+     * Get addresses
      *
-     * @return Collection|UserAddress[]
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getAddresses()
     {
-        $addresses = $this->addresses->toArray();
-        uasort(
-            $addresses,
-            function (UserAddress $a, UserAddress $b) {
-                if ($a->getType() == $b->getType()) {
-                    return 0;
-                }
-
-                return ($a->getType() < $b->getType()) ? -1 : 1;
-            }
-        );
-
-        return new ArrayCollection($addresses);
+        return $this->addresses;
     }
 
-    /**
-     * Get addresses of type
-     *
-     * @param int $type
-     *
-     * @return UserAddress[]|Collection
-     */
-    public function getAddressesOfType($type)
-    {
-        return $this->addresses->filter(
-            function (UserAddress $address) use ($type) {
-                return $address->getType() == $type;
-            }
-        );
-    }
 
     /**
      * @return BookingBankWire[]
