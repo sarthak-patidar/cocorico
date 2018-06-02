@@ -4,6 +4,8 @@ For a quick installation based on Docker see [Docker installation](https://githu
 
 For a manual installation on Windows see [Windows installation](installation-windows.md)
 
+For a manual installation on AWS Instance see [AWS Installation](Deploy_AWS.md)
+
 For a manual installation on Linux see below
 
 ## Requirements
