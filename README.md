@@ -48,3 +48,7 @@ Cocorico is released under the [MIT license](LICENSE).
 ## About Us
 
 Cocorico is a creation of [Cocolabs](http://www.cocolabs.io) specialist of online services sales solutions.
+
+## Deploying On AWS Instance
+
+Host Cocorico On AWS Instance [Install_AWS](Deploy_AWS.md)
