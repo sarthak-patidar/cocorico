@@ -80,7 +80,6 @@ class ListingFormHandler
     {
         /** @var Listing $listing */
         $listing = $form->getData();
-//        var_dump($listing->getLocation());
 //        Login is done in BookingNewType form
 
         if ($this->request->request->get('_username') || $this->request->request->get('_password')) {
@@ -93,45 +92,6 @@ class ListingFormHandler
 
         $this->listingManager->save($listing);
         return true;
-    }
-
-    /**
-     * @author Sarthak Patidar
-     *
-     * Process Listing
-     *
-     * @param Listing $listing
-     * @param User $user
-     * @param ListingLocation $listingLocation
-     *
-     * @return Booking|string
-     */
-    public function processImport(Listing $listing, User $user, ListingLocation $listingLocation)
-    {
-            return $this->importListing($listing, $user, $listingLocation);
-    }
-
-    /**
-     * @author Sarthak Patidar
-     *
-     * @param Listing $listing
-     * @param User $user
-     * @param ListingLocation $listingLocation
-     *
-     * @return string|boolean
-     *
-     */
-    private function importListing(Listing $listing, User $user, ListingLocation $listingLocation)
-    {
-        $this->registrationHandler->handleRegistration($user);
-
-        if($user->getId()){
-            $listing->setUser($user);
-            $listing->setLocation($listingLocation);
-            $this->listingManager->save($listing);
-            return true;
-        }
-       return false;
     }
 
     /**
@@ -164,7 +124,6 @@ class ListingFormHandler
     public function addCategories(Listing $listing)
     {
         $categories = $this->request->request->get("listing_categories");
-
         $listingCategories = isset($categories["listingListingCategories"]) ? $categories["listingListingCategories"] : array();
         $listingCategoriesValues = isset($categories["categoriesFieldsSearchableValuesOrderedByGroup"]) ? $categories["categoriesFieldsSearchableValuesOrderedByGroup"] : array();
 

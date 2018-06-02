@@ -22,6 +22,11 @@ use Cocorico\UserBundle\Entity\User;
 use Cocorico\UserBundle\Form\Handler\RegistrationFormHandler;
 use Cocorico\CoreBundle\Entity\Listing;
 use Cocorico\CoreBundle\Entity\ListingLocation;
+use Cocorico\CoreBundle\Entity\ListingListingCategory;
+use Cocorico\CoreBundle\Entity\ListingSubCategory;
+use Cocorico\CoreBundle\Entity\ListingEventType;
+use Cocorico\CoreBundle\Entity\ListingListingEventType;
+use Cocorico\CoreBundle\Entity\ListingListingSubCategory;
 
 ob_start();
 /**
@@ -48,6 +53,7 @@ class ListingController extends Controller
         $listing = $listingHandler->init();
         $form = $this->createCreateForm($listing);
         $success = $listingHandler->process($form);
+//        var_dump($request->request->get('listing'));
 
         if ($success) {
             $url = $this->generateUrl(
@@ -69,98 +75,6 @@ class ListingController extends Controller
                 'listing' => $listing,
                 'form' => $form->createView(),
                 )
-        );
-    }
-
-    /**
-     * @author Sarthak Patidar
-     *
-     * Creates a Listing import entity.
-     *
-     * @Route("/import", name="cocorico_listing_import")
-     * @Method({"GET"})
-     *
-     * @param  Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    public function import(Request $request){
-        $request->setMethod('POST');
-        $rowNo = array();
-        $collection = array();
-        $inserted_id = array();
-        $rowNo[0] = 0;
-        $i = 0;
-
-        // $fp is file pointer to file listing.csv
-        if (($fp = fopen("listing.csv", "r")) !== FALSE) {
-            while (($row = fgetcsv($fp, 1000, ",")) !== FALSE) {
-
-                //Create new listing and user entity
-                $listingHandler = $this->get('cocorico.form.handler.listing');
-                $listing = $listingHandler->init();
-                $user = new User();
-                $listingLocation = new ListingLocation();
-
-                //populate properties of a listing Location Entity
-                $listingLocation->setCountry('IN');
-                $listingLocation->setCity($row[15]);
-                $location = $listingLocation->getId();
-
-                //populate default properties of user entity
-                $user->setNationality('IN');
-                $user->setCountryOfResidence('IN');
-                $user->setPhonePrefix('+91');
-
-                //populate variable properties of user entity
-                $user->setFirstName($row[2]);
-                $email = str_shuffle("sarthak")."@manual.com";
-                $user->setUsername($email);
-                $user->setEmail($email);
-                $user->setLastName($row[0]);
-                $user->setPlainPassword('sarthak');
-
-                //populate listing entity
-                $listing->setLocation($listingLocation);
-                $category = array();
-                array_push($category,$row[2]);
-                $request->request->set('listing_categories',$category);
-                $listing->setPrice(2010);
-                $listing->setTitle("Artist X");
-                $listing->SetDescription("Lorem Ipsum Dolor Sit Amet");
-
-                //delete when program is live
-                var_dump($location);
-                print_r('<br><br>');
-
-                //Import Function
-                $success = $listingHandler->processImport($listing, $user, $listingLocation);
-                $num = count($row);
-                $rowNo[$i] = $num;
-                $i++;
-                array_push($collection,$row);
-                $status = "Insert ";
-                if(!$success)
-                {
-                    $status .= "Break";
-                    break;
-                }
-                else
-                {
-                    $status .= "Push";
-                    array_push($inserted_id,$success);
-                }
-            }
-            fclose($fp);
-        }
-
-        return $this->render(
-            'CocoricoCoreBundle:Frontend/Listing:import.html.twig',
-            array(
-                'collection' => $collection,
-                'insert_id' => $inserted_id,
-                'status' => $status,
-            )
         );
     }
 

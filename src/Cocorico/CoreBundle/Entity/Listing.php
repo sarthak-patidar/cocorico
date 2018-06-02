@@ -24,9 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Listing
  *
- * @ORM\Entity(repositoryClass="Cocorico\CoreBundle\Repository\ListingRepository")
- *
- * @ORM\Table(name="listing",indexes={
+ *    @ORM\Entity(repositoryClass="Cocorico\CoreBundle\Repository\ListingRepository")
+ *    @ORM\Table(name="listing",indexes={
  *    @ORM\Index(name="created_at_l_idx", columns={"createdAt"}),
  *    @ORM\Index(name="status_l_idx", columns={"status"}),
  *    @ORM\Index(name="price_idx", columns={"price"}),
@@ -139,6 +138,10 @@ class Listing extends BaseListing
         return $this->id;
     }
 
+    public function setId($id){
+        $this->id = $id;
+    }
+
     /**
      * Add characteristics
      *
@@ -214,9 +217,7 @@ class Listing extends BaseListing
      * @param  \Cocorico\CoreBundle\Entity\ListingListingCharacteristic $listingListingCharacteristic
      * @return Listing
      */
-    public function addListingListingCharacteristicsOrderedByGroup(
-        ListingListingCharacteristic $listingListingCharacteristic
-    ) {
+    public function addListingListingCharacteristicsOrderedByGroup(ListingListingCharacteristic $listingListingCharacteristic) {
         return $this->addListingListingCharacteristic($listingListingCharacteristic);
     }
 
@@ -226,9 +227,7 @@ class Listing extends BaseListing
      *
      * @param \Cocorico\CoreBundle\Entity\ListingListingCharacteristic $listingListingCharacteristic
      */
-    public function removeListingListingCharacteristicsOrderedByGroup(
-        ListingListingCharacteristic $listingListingCharacteristic
-    ) {
+    public function removeListingListingCharacteristicsOrderedByGroup(ListingListingCharacteristic $listingListingCharacteristic) {
         $this->removeListingListingCharacteristic($listingListingCharacteristic);
     }
 
@@ -318,7 +317,6 @@ class Listing extends BaseListing
     public function removeImage(ListingImage $image)
     {
         $this->images->removeElement($image);
-        $image->setListing(null);
     }
 
     /**
@@ -379,7 +377,6 @@ class Listing extends BaseListing
     public function removeDiscount(ListingDiscount $discount)
     {
         $this->discounts->removeElement($discount);
-        $discount->setListing(null);
     }
 
     /**
@@ -551,7 +548,7 @@ class Listing extends BaseListing
         $characteristic = 0;
         foreach ($this->getListingListingCharacteristics() as $characteristics) {
             if ($characteristics->getListingCharacteristicValue()) {
-                $characteristic = 1;
+                $characteristic = 11;
             }
         }
 
