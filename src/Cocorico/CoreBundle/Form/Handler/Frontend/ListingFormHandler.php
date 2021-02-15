@@ -52,7 +52,6 @@ class ListingFormHandler
         $listing = new Listing();
         $listing = $this->addImages($listing);
         $listing = $this->addCategories($listing);
-
         return $listing;
     }
 
@@ -82,20 +81,45 @@ class ListingFormHandler
     {
         /** @var Listing $listing */
         $listing = $form->getData();
-
-        //Login is done in BookingNewType form
+//        Login is done in BookingNewType form
         if ($this->request->request->get('_username') || $this->request->request->get('_password')) {
         } //Register : Authentication and Welcome email after registration
         elseif ($form->has('user') && $form->get('user')->has("email")) {
             $user = $listing->getUser();
             $this->registrationHandler->handleRegistration($user);
         }
-
         $this->listingManager->save($listing);
 
         return true;
     }
 
+    /**
+     * @author Sarthak Patidar <sarthakpatidar15@gmail.com>
+     *
+     * Process Listing
+     *
+     * @param Listing $listing
+     *
+     * @return Booking|string
+     */
+
+    public function processImport(Listing $listing){
+        return $this->importListing($listing);
+    }
+
+    /**
+     * @author Sarthak Patidar <sarthakpatidar15@gmail.com>
+     *
+     * @param Listing $listing
+     *
+     * @return boolean
+     *
+     */
+
+    private function importListing(Listing $listing){
+        $this->listingManager->save($listing);
+        return true;
+    }
 
     /**
      * @param  Listing $listing

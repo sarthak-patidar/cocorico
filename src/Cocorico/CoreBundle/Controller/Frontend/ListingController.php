@@ -24,15 +24,13 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @Route("/listing")
  */
+
 class ListingController extends Controller
 {
     /**
      * Creates a new Listing entity.
      *
      * @Route("/new", name="cocorico_listing_new")
-     *
-     * @Security("not has_role('ROLE_ADMIN')")
-     *
      * @Method({"GET", "POST"})
      *
      * @param  Request $request
@@ -42,33 +40,81 @@ class ListingController extends Controller
     public function newAction(Request $request)
     {
         $listingHandler = $this->get('cocorico.form.handler.listing');
-
         $listing = $listingHandler->init();
         $form = $this->createCreateForm($listing);
         $success = $listingHandler->process($form);
 
-        if ($success) {
-            $url = $this->generateUrl(
-                'cocorico_dashboard_listing_edit_presentation',
-                array('id' => $listing->getId())
-            );
-
-            $this->container->get('session')->getFlashBag()->add(
-                'success',
-                $this->container->get('translator')->trans('listing.new.success', array(), 'cocorico_listing')
-            );
-
-            return $this->redirect($url);
-        }
+//        if ($success) {
+//            $url = $this->generateUrl(
+//                'cocorico_dashboard_listing_edit_presentation',
+//                array('id' => $listing->getId())
+//            );
+//
+//            $this->container->get('session')->getFlashBag()->add(
+//                'success',
+//                $this->container->get('translator')->trans('listing.new.success', array(), 'cocorico_listing')
+//            );
+//            return $this->redirect($url);
+//        }
 
         return $this->render(
             'CocoricoCoreBundle:Frontend/Listing:new.html.twig',
             array(
                 'listing' => $listing,
                 'form' => $form->createView(),
+                )
+        );
+    }
+
+    /**
+     * @author Sarthak Patidar <sarthakpatidar15@gmail.com>
+     *
+     * Creates a Listing import entity.
+     *
+     * @Route("/import", name="cocorico_listing_import")
+     * @Method({"GET"})
+     *
+     * @param  Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function import(Request $request){
+        $rowNo = array();
+        $collection = array();
+        $inserted_id = array();
+        $rowNo[0] = 0;
+        $i = 0;
+        // $fp is file pointer to file listing.csv
+        if (($fp = fopen("listing.csv", "r")) !== FALSE) {
+            while (($row = fgetcsv($fp, 1000, ",")) !== FALSE) {
+                $listingHandler = $this->get('cocorico.form.handler.listing');
+                $listing = $listingHandler->init();
+//                $form = $this->createCreateForm($listing);
+                $success = $listingHandler->processImport($listing);
+                $id = $listing->getId();
+                $num = count($row);
+                $rowNo[$i] = $num;
+                $i++;
+                array_push($collection,$row);
+                if(!$success)
+                {
+                    break;
+                }
+                else
+                {
+                    array_push($inserted_id,$id);
+                }
+            }
+            fclose($fp);
+        }
+
+        return $this->render(
+            'CocoricoCoreBundle:Frontend/Listing:import.html.twig',
+            array(
+                'collection' => $collection,
+                'insert_id' => $inserted_id,
             )
         );
-
     }
 
     /**
@@ -89,10 +135,8 @@ class ListingController extends Controller
                 'action' => $this->generateUrl('cocorico_listing_new'),
             )
         );
-
         return $form;
     }
-
 
     /**
      * Finds and displays a Listing entity.
