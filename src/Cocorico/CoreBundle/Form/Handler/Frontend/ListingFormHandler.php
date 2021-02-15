@@ -10,9 +10,12 @@
  */
 namespace Cocorico\CoreBundle\Form\Handler\Frontend;
 
+use Cocorico\CoreBundle\Document\ListingAvailability;
 use Cocorico\CoreBundle\Entity\Booking;
 use Cocorico\CoreBundle\Entity\Listing;
+use Cocorico\CoreBundle\Entity\ListingLocation;
 use Cocorico\CoreBundle\Model\Manager\ListingManager;
+use Cocorico\UserBundle\Entity\User;
 use Cocorico\UserBundle\Form\Handler\RegistrationFormHandler;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -33,11 +36,7 @@ class ListingFormHandler
      * @param ListingManager          $listingManager
      * @param RegistrationFormHandler $registrationHandler
      */
-    public function __construct(
-        RequestStack $requestStack,
-        ListingManager $listingManager,
-        RegistrationFormHandler $registrationHandler
-    ) {
+    public function __construct(RequestStack $requestStack, ListingManager $listingManager, RegistrationFormHandler $registrationHandler) {
         $this->request = $requestStack->getCurrentRequest();
         $this->listingManager = $listingManager;
         $this->registrationHandler = $registrationHandler;
@@ -52,7 +51,6 @@ class ListingFormHandler
         $listing = new Listing();
         $listing = $this->addImages($listing);
         $listing = $this->addCategories($listing);
-
         return $listing;
     }
 
@@ -76,26 +74,65 @@ class ListingFormHandler
 
     /**
      * @param Form $form
-     * @return boolean
+     * @return bool
      */
     private function onSuccess(Form $form)
     {
         /** @var Listing $listing */
         $listing = $form->getData();
+//        var_dump($listing->getLocation());
+//        Login is done in BookingNewType form
 
-        //Login is done in BookingNewType form
         if ($this->request->request->get('_username') || $this->request->request->get('_password')) {
-        } //Register : Authentication and Welcome email after registration
+        }
+
         elseif ($form->has('user') && $form->get('user')->has("email")) {
             $user = $listing->getUser();
             $this->registrationHandler->handleRegistration($user);
         }
 
         $this->listingManager->save($listing);
-
         return true;
     }
 
+    /**
+     * @author Sarthak Patidar
+     *
+     * Process Listing
+     *
+     * @param Listing $listing
+     * @param User $user
+     * @param ListingLocation $listingLocation
+     *
+     * @return Booking|string
+     */
+    public function processImport(Listing $listing, User $user, ListingLocation $listingLocation)
+    {
+            return $this->importListing($listing, $user, $listingLocation);
+    }
+
+    /**
+     * @author Sarthak Patidar
+     *
+     * @param Listing $listing
+     * @param User $user
+     * @param ListingLocation $listingLocation
+     *
+     * @return string|boolean
+     *
+     */
+    private function importListing(Listing $listing, User $user, ListingLocation $listingLocation)
+    {
+        $this->registrationHandler->handleRegistration($user);
+
+        if($user->getId()){
+            $listing->setUser($user);
+            $listing->setLocation($listingLocation);
+            $this->listingManager->save($listing);
+            return true;
+        }
+       return false;
+    }
 
     /**
      * @param  Listing $listing
@@ -141,5 +178,4 @@ class ListingFormHandler
 
         return $listing;
     }
-
 }
